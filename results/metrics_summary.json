@@ -1,0 +1,17 @@
+{
+  "total_samples": 189,
+  "defect_f1_score_macro": 91.98,
+  "defect_f1_score_weighted": 95.36,
+  "accuracy": 95.24,
+  "ece_uncalibrated": 9.16,
+  "ece_calibrated": 0.63,
+  "fitted_temperature": 0.564,
+  "percent_routed_to_operator": 15.34,
+  "rpi_threshold": 0.3489,
+  "auto_passed_fn_leaks": 1,
+  "mean_faithfulness_score": 0.8329,
+  "adaptation_recovery_epochs": 3,
+  "latency_mean_ms": 3.13,
+  "latency_p95_ms": 5.54,
+  "ram_mean_mb": 743.79
+}

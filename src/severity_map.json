@@ -1,0 +1,31 @@
+{
+  "class_severity_tiers": {
+    "short_circuit": {
+      "base_severity": 0.9,
+      "criticality": "Critical",
+      "description": "Direct electrical short circuit / solder bridge."
+    },
+    "pcb_damage": {
+      "base_severity": 0.8,
+      "criticality": "High",
+      "description": "Physical substrate cracking, copper trace fracture."
+    },
+    "incorrect_installation": {
+      "base_severity": 0.7,
+      "criticality": "Medium-High",
+      "description": "Component polarity inversion or misplacement."
+    },
+    "dry_joint": {
+      "base_severity": 0.6,
+      "criticality": "Medium",
+      "description": "Insufficient solder wetting, cold solder joint."
+    },
+    "normal": {
+      "base_severity": 0.05,
+      "criticality": "Negligible",
+      "description": "Compliant board surface."
+    }
+  },
+  "reference_area_ratio": 0.05,
+  "formula": "S(c, area_ratio) = S_base(c) * (0.8 + 0.2 * min(1.0, area_ratio / REFERENCE_AREA_RATIO))"
+}
