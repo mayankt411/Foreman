@@ -1,17 +1,137 @@
 {
   "total_samples": 189,
-  "defect_f1_score_macro": 91.98,
-  "defect_f1_score_weighted": 95.36,
-  "accuracy": 95.24,
-  "ece_uncalibrated": 9.16,
-  "ece_calibrated": 0.63,
-  "fitted_temperature": 0.564,
-  "percent_routed_to_operator": 15.34,
-  "rpi_threshold": 0.3489,
-  "auto_passed_fn_leaks": 1,
-  "mean_faithfulness_score": 0.8329,
-  "adaptation_recovery_epochs": 3,
-  "latency_mean_ms": 3.13,
-  "latency_p95_ms": 5.54,
-  "ram_mean_mb": 743.79
+  "defect_f1_score_macro": 0.4542995169082126,
+  "defect_f1_score_weighted": 0.556280193236715,
+  "accuracy": 0.5833333333333334,
+  "ece_uncalibrated": 28.177805410491093,
+  "ece_calibrated": 14.598357760243946,
+  "fitted_temperature": 2.12145178491063,
+  "percent_routed_to_operator": 15.343915343915343,
+  "nll_before": 0.911115288734436,
+  "nll_after": 0.6729089021682739,
+  "faithfulness_formula": "0.5 * spatial_iou + 0.5 * heat_in_box",
+  "pretrained": true,
+  "rpi_threshold": 0.6768599999999999,
+  "auto_passed_fn_leaks": 6,
+  "mean_faithfulness_score": 0.19372645502645502,
+  "adaptation_recovery_epochs": null,
+  "latency_mean_ms": 831.5577062599913,
+  "latency_p95_ms": 1124.5022626004356,
+  "ram_mean_mb": 2077.7112169312163,
+  "eval_protocol": "Locked test split; 4-fold stratified train+valid OOF; OOF-only temperature fitting.",
+  "oof": {
+    "n": 153,
+    "accuracy": 0.7908496732026143,
+    "f1_macro": 0.662421185372005,
+    "f1_weighted": 0.7782187275919195,
+    "ece": 5.024169804224001
+  },
+  "test": {
+    "n": 36,
+    "accuracy": 0.5833333333333334,
+    "f1_macro": 0.4542995169082126,
+    "f1_weighted": 0.556280193236715,
+    "ece": 14.598357760243946
+  },
+  "ci95": {
+    "oof": {
+      "accuracy": [
+        0.7254901960784313,
+        0.8562091503267973
+      ],
+      "f1_macro": [
+        0.5398256974411386,
+        0.779956039436317
+      ],
+      "f1_weighted": [
+        0.7049725372645148,
+        0.849032437240475
+      ],
+      "ece": [
+        4.36844452387757,
+        13.037901747168279
+      ]
+    },
+    "test": {
+      "accuracy": [
+        0.4166666666666667,
+        0.75
+      ],
+      "f1_macro": [
+        0.31427546138072454,
+        0.6810883520074695
+      ],
+      "f1_weighted": [
+        0.37296871300354273,
+        0.7235426634768738
+      ],
+      "ece": [
+        10.994562695009842,
+        30.909547973424193
+      ]
+    }
+  },
+  "per_class_f1": {
+    "dry_joint": {
+      "f1": 0.4,
+      "support": 10
+    },
+    "incorrect_installation": {
+      "f1": 0.782608695652174,
+      "support": 10
+    },
+    "pcb_damage": {
+      "f1": 0.0,
+      "support": 1
+    },
+    "short_circuit": {
+      "f1": 0.5333333333333333,
+      "support": 6
+    },
+    "normal": {
+      "f1": 0.5555555555555556,
+      "support": 9
+    }
+  },
+  "latency_hardware": "Colab CPU (x86_64), torch.set_num_threads(4), forward plus Grad-CAM; image loading excluded",
+  "model": "resnet18-imagenet-ft",
+  "notes": [
+    "Small and imbalanced dataset.",
+    "pcb_damage has 5 images total.",
+    "Text similarity is keyword based.",
+    "Rationales are templates, not model text.",
+    "faithfulness_score uses spatial_iou and heat_in_box only; text similarity is a constant for template rationales and is excluded",
+    "ram_mb is process RSS on Colab and includes CUDA context when a GPU is used; not an edge measurement",
+    "Dry-run metrics are not representative.",
+    "faithfulness_score uses the ground-truth box. It is an offline evaluation metric, not a deployable signal."
+  ],
+  "phase5": {
+    "file": "results/phase5_eval.json",
+    "review_budget": 0.15,
+    "error_rate": 0.24867724867724866,
+    "auroc_error": {
+      "confidence_only (1-raw)": 0.742,
+      "U only": 0.751,
+      "Severity only": 0.492,
+      "Unfaithfulness only": 0.836,
+      "U + Unfaith": 0.851,
+      "U + Severity": 0.695,
+      "Full RPI 0.35/0.35/0.30": 0.76,
+      "cam_peak low (no truth box)": 0.736,
+      "U + cam_peak low (no truth box)": 0.769
+    },
+    "learned_weights_U_S_Unfaith": [
+      0.423,
+      0.02,
+      0.557
+    ],
+    "per_class_ece_percent": {
+      "dry_joint": 13.1,
+      "incorrect_installation": 10.2,
+      "normal": 15.6,
+      "pcb_damage": 45.0,
+      "short_circuit": 10.3
+    },
+    "caveat": "faithfulness uses the ground-truth box; not available at deployment"
+  }
 }

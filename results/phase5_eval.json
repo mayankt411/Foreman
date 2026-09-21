@@ -1,0 +1,199 @@
+{
+  "n": 189,
+  "review_budget": 0.15,
+  "error_rate": 0.24867724867724866,
+  "n_missed_defects": 6,
+  "random_baseline": {
+    "errors_caught": 0.15,
+    "misses_caught": 0.15,
+    "precision": 0.24867724867724866
+  },
+  "ablation": {
+    "confidence_only (1-raw)": {
+      "auroc_error": 0.74213365298172,
+      "auroc_error_ci95": [
+        0.6593630407025132,
+        0.8159042036625971
+      ],
+      "errors_caught": 0.2765957446808511,
+      "misses_caught": 0.3333333333333333,
+      "precision": 0.4642857142857143,
+      "errors_caught_ci95": [
+        0.19990196078431374,
+        0.4286525974025973
+      ]
+    },
+    "U only": {
+      "auroc_error": 0.7511237638597543,
+      "auroc_error_ci95": [
+        0.6681077108064039,
+        0.833898136430393
+      ],
+      "errors_caught": 0.2978723404255319,
+      "misses_caught": 0.5,
+      "precision": 0.5,
+      "errors_caught_ci95": [
+        0.21424772036474163,
+        0.43243243243243246
+      ]
+    },
+    "Severity only": {
+      "auroc_error": 0.4916092298471681,
+      "auroc_error_ci95": [
+        0.39303169656430526,
+        0.5830455938411079
+      ],
+      "errors_caught": 0.1702127659574468,
+      "misses_caught": 0.0,
+      "precision": 0.2857142857142857,
+      "errors_caught_ci95": [
+        0.0979920814479638,
+        0.2894736842105263
+      ]
+    },
+    "Unfaithfulness only": {
+      "auroc_error": 0.8356308061132754,
+      "auroc_error_ci95": [
+        0.7586335428755642,
+        0.9053606491682034
+      ],
+      "errors_caught": 0.48936170212765956,
+      "misses_caught": 0.5,
+      "precision": 0.8214285714285714,
+      "errors_caught_ci95": [
+        0.37777777777777777,
+        0.6086956521739131
+      ]
+    },
+    "U + Unfaith": {
+      "auroc_error": 0.8513635001498352,
+      "auroc_error_ci95": [
+        0.7954337255534064,
+        0.9024840102153818
+      ],
+      "errors_caught": 0.3829787234042553,
+      "misses_caught": 0.6666666666666666,
+      "precision": 0.6428571428571429,
+      "errors_caught_ci95": [
+        0.30610827664399093,
+        0.5135328185328185
+      ]
+    },
+    "U + Severity": {
+      "auroc_error": 0.6945609829187893,
+      "auroc_error_ci95": [
+        0.5965591999693226,
+        0.7928158952159924
+      ],
+      "errors_caught": 0.3191489361702128,
+      "misses_caught": 0.0,
+      "precision": 0.5357142857142857,
+      "errors_caught_ci95": [
+        0.21052631578947367,
+        0.440111111111111
+      ]
+    },
+    "Full RPI 0.35/0.35/0.30": {
+      "auroc_error": 0.7598142043751874,
+      "auroc_error_ci95": [
+        0.678062679298563,
+        0.8302880113084194
+      ],
+      "errors_caught": 0.3404255319148936,
+      "misses_caught": 0.0,
+      "precision": 0.5714285714285714,
+      "errors_caught_ci95": [
+        0.25,
+        0.46153846153846156
+      ]
+    },
+    "cam_peak low (no truth box)": {
+      "auroc_error": 0.735540905004495,
+      "auroc_error_ci95": [
+        0.6620790892955899,
+        0.8045226512617817
+      ],
+      "errors_caught": 0.23404255319148937,
+      "misses_caught": 0.3333333333333333,
+      "precision": 0.39285714285714285,
+      "errors_caught_ci95": [
+        0.13725490196078433,
+        0.34782608695652173
+      ]
+    },
+    "U + cam_peak low (no truth box)": {
+      "auroc_error": 0.7689541504345221,
+      "auroc_error_ci95": [
+        0.6961052768355399,
+        0.8364261871589457
+      ],
+      "errors_caught": 0.3404255319148936,
+      "misses_caught": 0.5,
+      "precision": 0.5714285714285714,
+      "errors_caught_ci95": [
+        0.24443089430894308,
+        0.4634571752694271
+      ]
+    }
+  },
+  "learned_weights": {
+    "raw_coef_[U,S,Unfaith]": [
+      2.2717065395001383,
+      0.10841354402121538,
+      2.995486863202572
+    ],
+    "normalised_nonneg_weights": [
+      0.4225953575129953,
+      0.020167684336981934,
+      0.5572369581500228
+    ],
+    "test_auroc_learned": 0.9111111111111111,
+    "test_auroc_default": 0.7968253968253969,
+    "test_errors_caught_learned": 0.3333333333333333,
+    "test_errors_caught_default": 0.3333333333333333,
+    "n_test": 36
+  },
+  "per_class_ece": {
+    "dry_joint": {
+      "n_predicted": 19,
+      "accuracy": 0.6842105263157895,
+      "mean_conf": 0.6926894736842105,
+      "ece_percent": 13.101578947368422,
+      "reliable": false
+    },
+    "incorrect_installation": {
+      "n_predicted": 111,
+      "accuracy": 0.7927927927927928,
+      "mean_conf": 0.7896324324324324,
+      "ece_percent": 10.215315315315319,
+      "reliable": true
+    },
+    "normal": {
+      "n_predicted": 23,
+      "accuracy": 0.7391304347826086,
+      "mean_conf": 0.6617652173913043,
+      "ece_percent": 15.626956521739132,
+      "reliable": false
+    },
+    "pcb_damage": {
+      "n_predicted": 2,
+      "accuracy": 0.5,
+      "mean_conf": 0.5788,
+      "ece_percent": 44.98,
+      "reliable": false
+    },
+    "short_circuit": {
+      "n_predicted": 34,
+      "accuracy": 0.6764705882352942,
+      "mean_conf": 0.7797529411764706,
+      "ece_percent": 10.328235294117647,
+      "reliable": true
+    }
+  },
+  "notes": [
+    "faithfulness_score uses the ground-truth box, so unfaithfulness is an oracle signal. It is not available at deployment. Its AUROC is inflated.",
+    "Scores judged on model errors (pred != truth), not on defect severity.",
+    "OOF predictions come from held-out folds; test is the locked split.",
+    "Per-class ECE with fewer than 30 predictions is not reliable."
+  ]
+}

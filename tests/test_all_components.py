@@ -4,6 +4,7 @@ test_all_components.py - Unit & Integration Tests for XiVLM-Loop
 
 import unittest
 import os, sys
+import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
@@ -53,6 +54,101 @@ class TestXiVLMComponents(unittest.TestCase):
         fit_out = engine.fit_temperature(confs, y)
         self.assertGreater(fit_out["temperature"], 0.0)
         self.assertLessEqual(fit_out["ece_after"], fit_out["ece_before"])
+
+    def test_recalibration_temperature_clamp(self):
+        engine = ActiveRecalibrationEngine(initial_temperature=100.0)
+        self.assertEqual(engine.temperature, 10.0)
+        engine.temperature = 100.0
+        result = engine.ingest_operator_feedback("image-1", "reject", 1.0)
+        self.assertEqual(result["updated_temperature"], 10.0)
+
+    def test_windows_path_basename(self):
+        from backend.api import windows_basename
+        self.assertEqual(windows_basename(r"C:\Users\example\image.jpg"), "image.jpg")
+
+    def test_feedback_endpoint_and_undo(self):
+        from fastapi.testclient import TestClient
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            db_path = os.path.join(temp_dir, "feedback.db")
+            os.environ["XIVLM_DB"] = db_path
+            import backend.api as api
+
+            api.DB_PATH = db_path
+            api._restore_engine([])
+            client = TestClient(api.app)
+
+            response = client.post(
+                "/api/feedback",
+                json={"frame_index": 0, "action": "accept", "override_label": ""},
+            )
+            self.assertEqual(response.status_code, 200)
+            body = response.json()
+            self.assertEqual(body["total_logs"], 1)
+            self.assertIn("lora_queue_size", body)
+            self.assertEqual(len(client.get("/api/feedback/history").json()), 1)
+
+            invalid_action = client.post(
+                "/api/feedback",
+                json={"frame_index": 0, "action": "invalid", "override_label": ""},
+            )
+            self.assertEqual(invalid_action.status_code, 400)
+            invalid_frame = client.post(
+                "/api/feedback",
+                json={"frame_index": -1, "action": "accept", "override_label": ""},
+            )
+            self.assertEqual(invalid_frame.status_code, 404)
+
+            bad_label = client.post(
+                "/api/feedback",
+                json={"frame_index": 0, "action": "overrule", "override_label": "banana"},
+            )
+            self.assertEqual(bad_label.status_code, 400)
+            missing_label = client.post(
+                "/api/feedback",
+                json={"frame_index": 0, "action": "overrule", "override_label": ""},
+            )
+            self.assertEqual(missing_label.status_code, 400)
+            good_overrule = client.post(
+                "/api/feedback",
+                json={"frame_index": 0, "action": "overrule", "override_label": "normal"},
+            )
+            self.assertEqual(good_overrule.status_code, 200)
+            self.assertEqual(client.get("/api/feedback/history").json()[-1]["override_label"], "normal")
+            self.assertTrue(client.post("/api/feedback/undo").json()["success"])
+            health = client.get("/api/health").json()
+            self.assertNotEqual(health["version"], "2.1.0")
+
+            undo = client.post("/api/feedback/undo")
+            self.assertEqual(undo.status_code, 200)
+            self.assertTrue(undo.json()["success"])
+            self.assertEqual(undo.json()["total_logs"], 0)
+
+    def test_heatmap_and_recompute_endpoints(self):
+        from fastapi.testclient import TestClient
+        import backend.api as api
+
+        client = TestClient(api.app)
+        preds = client.get("/api/predictions").json()
+        self.assertEqual(len(preds), 189)
+        self.assertTrue(all(p["has_heatmap"] for p in preds))
+        heat = client.get(preds[0]["heatmap_url"])
+        self.assertEqual(heat.status_code, 200)
+        self.assertEqual(heat.headers["content-type"], "image/png")
+        self.assertEqual(client.get("/api/heatmap/9999").status_code, 404)
+        self.assertEqual(client.get("/api/plots/reliability_oof").status_code, 200)
+        self.assertEqual(client.get("/api/plots/../../etc/passwd").status_code, 404)
+        self.assertEqual(client.get("/api/plots/banana").status_code, 404)
+        self.assertEqual(client.get("/api/image/0").status_code, 200)
+
+        at_fit = client.get(f"/api/recompute?temperature={api.FITTED_TEMPERATURE}").json()
+        self.assertEqual(len(at_fit["frames"]), 189)
+        for frame, pred in zip(at_fit["frames"], preds):
+            self.assertAlmostEqual(frame["rpi_score"], pred["rpi_score"], places=2)
+        hot = client.get("/api/recompute?temperature=5").json()
+        cold = client.get("/api/recompute?temperature=0.5").json()
+        self.assertGreater(hot["frames"][3]["u_calib"], cold["frames"][3]["u_calib"])
+        self.assertEqual(client.get("/api/recompute?temperature=99").json()["temperature"], 10.0)
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ class ActiveRecalibrationEngine:
     """
 
     def __init__(self, initial_temperature: float = 1.0):
-        self.temperature = max(0.01, initial_temperature)
+        self.temperature = min(10.0, max(0.1, initial_temperature))
         self.calibration_history = [self.temperature]
         self.operator_feedback_buffer = []
         self.lora_refresh_cache = []
@@ -124,7 +124,7 @@ class ActiveRecalibrationEngine:
             # Model was underconfident on a correct call -> decrease temperature
             self.temperature = max(0.1, self.temperature - lr * (0.5 - model_confidence))
 
-        self.temperature = float(round(self.temperature, 3))
+        self.temperature = float(round(min(10.0, max(0.1, self.temperature)), 3))
         self.calibration_history.append(self.temperature)
 
         return {

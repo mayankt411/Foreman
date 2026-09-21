@@ -1,4 +1,8 @@
 """
+NOTE: EVALUATION-ONLY. F_exp needs the ground-truth defect box, which does not exist at
+deployment. Use it for offline evaluation and demo replay. Do not use it to route
+frozen production inputs. See RESULTS.md, Phase 5.
+
 faithfulness_guard.py - Multi-Modal Explanation Faithfulness Guard
 
 Implements the paper's F_exp(H, T, x) faithfulness guard:

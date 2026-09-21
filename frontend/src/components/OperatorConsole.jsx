@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Check, X } from 'lucide-react';
 
 export default function OperatorConsole({
@@ -6,11 +5,13 @@ export default function OperatorConsole({
   frameIndex,
   currentTemperature,
   operatorLogs,
+  selectedLabel,
+  setSelectedLabel,
   onAccept,
-  onOverrule
+  onOverrule,
+  onUndo,
+  feedbackError
 }) {
-  const [selectedLabel, setSelectedLabel] = useState('dry_joint');
-
   if (!currentFrame) return null;
 
   const predLabel = currentFrame.predicted_label;
@@ -85,6 +86,15 @@ export default function OperatorConsole({
           <span>Overrule [O]</span>
         </button>
       </div>
+      {feedbackError && (
+        <div className="text-[11px] text-red-400 text-center mb-2">{feedbackError}</div>
+      )}
+      <button
+        onClick={onUndo}
+        className="py-1 px-3 rounded border border-[#2c303a] text-[#8c92a0] hover:text-[#e6e8ec] hover:bg-[#22252c] text-xs transition-colors"
+      >
+        Undo [U]
+      </button>
 
       {/* Operator Audit & Temperature Recalibration Log */}
       <div className="pt-2.5 border-t border-[#2c303a]">

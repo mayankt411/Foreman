@@ -6,6 +6,8 @@ export default function SidebarControls({
   w2, setW2,
   w3, setW3,
   thetaRoute, setThetaRoute,
+  defaultThetaRoute,
+  currentTemperature, setCurrentTemperature,
   selectedCategory, setSelectedCategory,
   playbackSpeed, setPlaybackSpeed
 }) {
@@ -22,7 +24,7 @@ export default function SidebarControls({
     setW1(0.35);
     setW2(0.35);
     setW3(0.30);
-    setThetaRoute(0.351);
+    setThetaRoute(defaultThetaRoute);
   };
 
   return (
@@ -115,7 +117,7 @@ export default function SidebarControls({
         {/* w3 */}
         <div className="space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-[#8c92a0]">w₃ Faithfulness</span>
+            <span className="text-[#8c92a0]">w₃ Faithfulness (offline)</span>
             <span className="font-mono text-[#e6e8ec] font-medium">
               {w3.toFixed(2)}
             </span>
@@ -149,6 +151,23 @@ export default function SidebarControls({
             className="w-full accent-[#8c92a0] h-1 bg-[#2c303a] rounded cursor-pointer"
           />
         </div>
+      </div>
+
+      {/* Stream Playback Speed */}
+      <div className="space-y-1.5 pt-2.5 border-t border-[#2c303a]">
+        <div className="flex justify-between text-[11px] text-[#8c92a0]">
+          <span>Live calibration temperature</span>
+          <span className="font-mono text-[#e6e8ec]">{Number(currentTemperature).toFixed(3)}</span>
+        </div>
+        <input
+          type="range"
+          min="0.1"
+          max="10"
+          step="0.001"
+          value={currentTemperature}
+          onChange={(e) => setCurrentTemperature(Number(e.target.value))}
+          className="w-full accent-[#8c92a0] h-1 bg-[#2c303a] rounded cursor-pointer"
+        />
       </div>
 
       {/* Stream Playback Speed */}

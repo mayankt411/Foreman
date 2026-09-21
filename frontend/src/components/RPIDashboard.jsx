@@ -16,6 +16,11 @@ export default function RPIDashboard({
   const arcLength = Math.PI * radius;
   const clampedRPI = Math.min(1.0, Math.max(0.0, rpiValue));
   const strokeDashoffset = arcLength * (1 - clampedRPI);
+  const parts = [
+    { label: '0.35 × uncertainty', value: 0.35 * Number(uCalib || 0), color: '#38bdf8' },
+    { label: '0.35 × severity', value: 0.35 * Number(severity || 0), color: '#fbbf24' },
+    { label: '0.30 × unfaithfulness', value: 0.30 * Number(unfaithfulness || 0), color: '#fb7185' }
+  ];
 
   const thetaAngle = Math.PI * (1 - thetaRoute);
   const tickInner = radius - 8;
@@ -128,6 +133,16 @@ export default function RPIDashboard({
 
       {/* Tri-Factor Component Breakdowns */}
       <div className="space-y-2 pt-2.5 border-t border-[#2c303a] text-xs">
+        <div className="relative">
+          <div className="flex h-3 rounded overflow-hidden bg-[#121316]">
+            {parts.map(part => <div key={part.label} style={{ width: `${part.value * 100}%`, backgroundColor: part.color }} />)}
+          </div>
+          <div className="absolute top-[-3px] h-5 border-l-2 border-white" style={{ left: `${Number(thetaRoute || 0) * 100}%` }} />
+          <div className="flex justify-between text-[10px] text-[#8c92a0] mt-1"><span>Weighted RPI components</span><span>threshold</span></div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+            {parts.map(part => <span key={part.label} className="text-[10px] text-[#8c92a0]"><i className="inline-block w-2 h-2 rounded-sm mr-1" style={{ backgroundColor: part.color }} />{part.label}</span>)}
+          </div>
+        </div>
         {/* Uncertainty */}
         <div>
           <div className="flex justify-between text-[11px] mb-1">
@@ -170,7 +185,7 @@ export default function RPIDashboard({
         <div>
           <div className="flex justify-between text-[11px] mb-1">
             <span className="text-[#8c92a0]">
-              Unfaithfulness <span className="font-mono text-[#e6e8ec]">1 - F_exp</span>
+              Unfaithfulness <span className="font-mono text-[#e6e8ec]">1 - F_exp</span> <span className="text-[10px]">(offline: uses truth box)</span>
             </span>
             <span className="text-[#e6e8ec]">
               <span className="font-mono font-medium">{Number(unfaithfulness).toFixed(3)}</span>{' '}

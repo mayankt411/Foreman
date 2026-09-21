@@ -1,88 +1,61 @@
 import React from 'react';
 
+const pct = (value, digits = 1) => (value === undefined || value === null ? 'n/a' : `${(Number(value) * 100).toFixed(digits)}%`);
+const num = (value, digits = 2) => (value === undefined || value === null ? 'n/a' : Number(value).toFixed(digits));
+
+function Card({ title, note, value, valueClass = 'text-[#e6e8ec]', side, foot }) {
+  return (
+    <div className="bg-[#1a1c21] border border-[#2c303a] rounded-md p-3.5 flex flex-col justify-between shadow-sm">
+      <div className="flex items-center justify-between text-xs text-[#8c92a0]">
+        <span>{title}</span>
+        <span className="text-[11px]">{note}</span>
+      </div>
+      <div className="my-1.5 flex items-baseline justify-between">
+        <span className={`text-2xl font-bold font-mono tracking-tight ${valueClass}`}>{value}</span>
+        <span className="text-xs text-[#8c92a0]">{side}</span>
+      </div>
+      <div className="text-[11px] text-[#8c92a0]">{foot}</div>
+    </div>
+  );
+}
+
 export default function TopHUD({ metrics, currentTemperature }) {
-  const f1 = metrics?.defect_f1_score_weighted || 95.36;
-  const ece = metrics?.ece_calibrated || 0.63;
-  const routed = metrics?.percent_routed_to_operator || 15.34;
-  const faithfulness = metrics?.mean_faithfulness_score || 0.8329;
+  const oof = metrics?.oof || {};
+  const test = metrics?.test || {};
+  const routed = metrics?.percent_routed_to_operator;
+  const temperature = currentTemperature ?? metrics?.fitted_temperature;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mb-4">
-      {/* Metric 1: Defect F1 */}
-      <div className="bg-[#1a1c21] border border-[#2c303a] rounded-md p-3.5 flex flex-col justify-between shadow-sm">
-        <div className="flex items-center justify-between text-xs text-[#8c92a0]">
-          <span>Defect F₁-score</span>
-          <span className="text-[11px]">Target &gt; 96.5%</span>
-        </div>
-        <div className="my-1.5 flex items-baseline justify-between">
-          <span className="text-2xl font-bold font-mono text-[#e6e8ec] tracking-tight">
-            {Number(f1).toFixed(2)}%
-          </span>
-          <span className="text-xs text-[#8c92a0]">
-            +4.16% vs SAEC
-          </span>
-        </div>
-        <div className="text-[11px] text-[#8c92a0]">
-          Weighted multiclass classification
-        </div>
-      </div>
-
-      {/* Metric 2: Calibrated ECE */}
-      <div className="bg-[#1a1c21] border border-[#2c303a] rounded-md p-3.5 flex flex-col justify-between shadow-sm">
-        <div className="flex items-center justify-between text-xs text-[#8c92a0]">
-          <span>Calibrated ECE</span>
-          <span className="text-[11px]">Target &lt; 2.50%</span>
-        </div>
-        <div className="my-1.5 flex items-baseline justify-between">
-          <span className="text-2xl font-bold font-mono text-emerald-400 tracking-tight">
-            {Number(ece).toFixed(2)}%
-          </span>
-          <span className="text-xs text-[#8c92a0] line-through">
-            9.16% uncalib
-          </span>
-        </div>
-        <div className="text-[11px] text-[#8c92a0]">
-          Expected calibration error (T*=0.564)
-        </div>
-      </div>
-
-      {/* Metric 3: Operator Escalation */}
-      <div className="bg-[#1a1c21] border border-[#2c303a] rounded-md p-3.5 flex flex-col justify-between shadow-sm">
-        <div className="flex items-center justify-between text-xs text-[#8c92a0]">
-          <span>Operator escalation</span>
-          <span className="text-[11px]">Target &lt; 15.0%</span>
-        </div>
-        <div className="my-1.5 flex items-baseline justify-between">
-          <span className="text-2xl font-bold font-mono text-[#e6e8ec] tracking-tight">
-            {Number(routed).toFixed(2)}%
-          </span>
-          <span className="text-xs text-[#8c92a0]">
-            {(100 - Number(routed)).toFixed(1)}% auto-pass
-          </span>
-        </div>
-        <div className="text-[11px] text-[#8c92a0]">
-          Tri-factor routing line rate
-        </div>
-      </div>
-
-      {/* Metric 4: Faithfulness */}
-      <div className="bg-[#1a1c21] border border-[#2c303a] rounded-md p-3.5 flex flex-col justify-between shadow-sm">
-        <div className="flex items-center justify-between text-xs text-[#8c92a0]">
-          <span>Faithfulness (F_exp)</span>
-          <span className="text-[11px]">Target &gt; 0.880</span>
-        </div>
-        <div className="my-1.5 flex items-baseline justify-between">
-          <span className="text-2xl font-bold font-mono text-[#e6e8ec] tracking-tight">
-            {Number(faithfulness).toFixed(4)}
-          </span>
-          <span className="text-xs text-[#8c92a0]">
-            IoU 0.852 · Sim 0.814
-          </span>
-        </div>
-        <div className="text-[11px] text-[#8c92a0]">
-          Spatial & semantic grounding
-        </div>
-      </div>
+      <Card
+        title="Defect F1 (macro)"
+        note="OOF n=153"
+        value={num(oof.f1_macro, 3)}
+        side={`Test ${num(test.f1_macro, 3)}`}
+        foot="Held-out folds. Test split has 36 images"
+      />
+      <Card
+        title="Calibrated ECE"
+        note="OOF n=153"
+        value={`${num(oof.ece)}%`}
+        valueClass="text-emerald-400"
+        side={`Test ${num(test.ece)}%`}
+        foot={`Temperature T = ${num(temperature, 2)}`}
+      />
+      <Card
+        title="Operator escalation"
+        note="RPI top 15%"
+        value={routed === undefined ? 'n/a' : `${num(routed)}%`}
+        side={routed === undefined ? '' : `${(100 - Number(routed)).toFixed(1)}% auto-pass`}
+        foot={`${metrics?.auto_passed_fn_leaks ?? 'n/a'} missed defects auto-passed`}
+      />
+      <Card
+        title="Faithfulness (offline)"
+        note="uses truth box"
+        value={num(metrics?.mean_faithfulness_score, 3)}
+        side="0.5 IoU + 0.5 heat-in-box"
+        foot="Evaluation only. Needs the ground-truth box, not available in production"
+      />
     </div>
   );
 }
